@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
+using Microsoft.VisualBasic.FileIO;
 
 namespace NoDupes
 {
@@ -27,8 +28,7 @@ namespace NoDupes
             {
                 CancelButton.IsEnabled = true;
                 SelectedFolder.Text = dialog.SelectedPath;
-                var files = (bool)RecursiveCheckbox.IsChecked ? Directory.EnumerateFiles(dialog.SelectedPath, "*.*", SearchOption.AllDirectories) : Directory.GetFiles(dialog.SelectedPath);
-                //var duplicatesData = new List<ListData>();
+                var files = (bool)RecursiveCheckbox.IsChecked ? Directory.EnumerateFiles(dialog.SelectedPath, "*.*", new EnumerationOptions { IgnoreInaccessible = true, RecurseSubdirectories = true }) : Directory.GetFiles(dialog.SelectedPath);
                 ObservableCollection<ListData> duplicatesData = new ObservableCollection<ListData>();
                 FileList.ItemsSource = duplicatesData;
 
@@ -73,7 +73,7 @@ namespace NoDupes
             {
                 ProgressBar.Value = 0;
                 ProgressBar.Visibility = Visibility.Hidden;
-                AddToStatusText("Finished scanning.");
+                AddToStatusText($"Finished scanning {files.Count()} files.");
 
 
             }));
@@ -135,7 +135,34 @@ namespace NoDupes
 
         private void DeleteDuplicatesButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Delete action.");
+            var source = FileList.ItemsSource;
+            List<ListData> toDelete = new List<ListData>();
+
+            foreach (ListData item in source)
+            {
+                if (item.IsChecked == true)
+                {
+                    toDelete.Add(item);
+                }
+            }
+
+            var filesString = toDelete.Count == 1 ? "file" : "files";
+            var confirmationMessage = $"{toDelete.Count} {filesString} will be deleted. Continue?";
+
+            if (System.Windows.MessageBox.Show(confirmationMessage, "Delete files", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                foreach (ListData item in toDelete)
+                {
+                    try
+                    {
+                        FileSystem.DeleteFile(item.Path, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        AddToStatusText($"File {item.Path} could not be found.");
+                    }
+                }
+            }
         }
     }
 }

@@ -11,20 +11,27 @@
             <ColumnDefinition Width="201*"/>
             <ColumnDefinition Width="199*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="BrowseButton" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="800" Visibility="Visible" Click="BrowseButton_Click" Margin="0,39,0,0" Content="Select folder..." Grid.ColumnSpan="2" />
-        <TextBlock x:Name="SelectedFolder" Margin="0,81,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="RecursiveCheckbox" Content="Recursive" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Height="16" IsChecked="True"/>
+        <Button x:Name="BrowseButton" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="42" Width="800" Visibility="Visible" Click="BrowseButton_Click" Margin="0,39,0,0" Content="Select folder..." Grid.ColumnSpan="2" ToolTip="Selected directory will be scanned for duplicate files"/>
+        <TextBlock x:Name="SelectedFolder" Margin="0,81,0,0" TextWrapping="Wrap" Text="" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+        <CheckBox x:Name="RecursiveCheckbox" Content="Recursive" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Height="16" IsChecked="True" ToolTip="Scanning will include subfolders"/>
         <CheckBox x:Name="NameSearchCheckbox" Content="Check filename" HorizontalAlignment="Left" Margin="106,11,0,0" VerticalAlignment="Top" Height="16" IsChecked="False" IsEnabled="False"/>
         <ListView x:Name="FileList" Margin="0,99,0,64" Grid.ColumnSpan="2">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="MD5" DisplayMemberBinding="{Binding MD5}"/>
                     <GridViewColumn Header="Path" DisplayMemberBinding="{Binding Path}"/>
                     <GridViewColumn Header="MatchingPath" DisplayMemberBinding="{Binding MatchingPath}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="DeleteDuplicatesButton" Content="Delete duplicates" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FF00FF27" Grid.Column="1" Height="34" Width="205" FontWeight="Bold" Foreground="White" IsEnabled="False" Margin="0, 0, 10, 10" Click="DeleteDuplicatesButton_Click"/>
+        <Button x:Name="DeleteDuplicatesButton" Content="Delete duplicates" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FF00B31B" Grid.Column="1" Height="34" Width="205" FontWeight="Bold" Foreground="White" IsEnabled="False" Margin="0, 0, 10, 10" Click="DeleteDuplicatesButton_Click"/>
         <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Red" Height="34" Width="150" FontWeight="Bold" Foreground="White" IsEnabled="False" Margin="0,0,227,10" Grid.Column="1" Click="CancelButton_Click"/>
         <Grid Width="393" Height="54" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,0,0,5">
             <ScrollViewer Grid.ColumnSpan="1" VerticalScrollBarVisibility="Auto">
